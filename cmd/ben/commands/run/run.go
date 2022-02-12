@@ -140,7 +140,7 @@ func confirmationFailed(err error) *handler.Error {
 }
 
 // runJobs runs the jobs in workDir.
-func runJobs(jobs map[string]job.Job, workDir string) error {
+func runJobs(jobs []job.Job, workDir string) error {
 	for _, j := range jobs {
 		if err := runJob(j, workDir); err != nil {
 			return err

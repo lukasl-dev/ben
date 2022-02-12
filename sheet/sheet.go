@@ -18,9 +18,9 @@ type Sheet struct {
 	// Description is a short description about the usage of the sheet.
 	Description string `json:"description,omitempty"`
 
-	// Jobs is a map of jobs that can be executed on the sheet. The key is the
+	// Jobs is a slice of jobs that can be executed on the sheet. The key is the
 	// unique name of a job.
-	Jobs map[string]job.Job `json:"jobs,omitempty"`
+	Jobs []job.Job `json:"jobs,omitempty"`
 }
 
 // Validate validates s.
