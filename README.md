@@ -1,5 +1,15 @@
 # ben
 
+- [ben](#ben)
+  - [📦 Installation](#-installation)
+    - [Installation via `go install`](#installation-via-go-install)
+    - [Installation via `go get`](#installation-via-go-get)
+  - [🧩 Explanation](#-explanation)
+    - [Sheet](#sheet)
+    - [Job](#job)
+    - [Step](#step)
+  - [🧅 Examples](#-examples)
+
 ## 📦 Installation
 
 ### Installation via `go install`
