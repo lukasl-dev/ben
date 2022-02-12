@@ -22,7 +22,7 @@ func (s Step) Validate() error {
 
 	typ, val := reflect.TypeOf(s), reflect.ValueOf(s)
 	for i := 0; i < typ.NumField(); i++ {
-		if !val.Field(i).IsZero() {
+		if typ.Field(i).Anonymous && !val.Field(i).IsZero() {
 			set++
 		}
 	}
