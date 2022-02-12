@@ -79,18 +79,14 @@ func (r *run) run(*cobra.Command, []string) error {
 // loadSheet loads a sheet from the given URI and shows a spinner while it is
 // loading.
 func loadSheet(uri string) (*sheet.Sheet, error) {
-	s := spinner.New(spinner.Options{
-		Pending: "Sheet is loading...",
-		Success: "Sheet has been loaded.",
-		Error:   "Failed to load sheet.",
-	})
+	s := spinner.New("Loading sheet...", spinner.Options{})
 	s.Start()
 
 	loaded, err := sheet.Load(uri)
 	if err != nil {
-		s.Error()
+		s.Error(fmt.Sprintf("Failed to load sheet: %s", err))
 	}
-	s.Success()
+	s.Success("Sheet has been loaded.")
 	return loaded, err
 }
 
@@ -141,8 +137,8 @@ func confirmationFailed(err error) *handler.Error {
 
 // runJobs runs the jobs in workDir.
 func runJobs(jobs []job.Job, workDir string) error {
-	for _, j := range jobs {
-		if err := runJob(j, workDir); err != nil {
+	for i, j := range jobs {
+		if err := runJob(j, i+1, len(jobs), workDir); err != nil {
 			return err
 		}
 	}
@@ -150,38 +146,26 @@ func runJobs(jobs []job.Job, workDir string) error {
 }
 
 // runJob runs j in workDir.
-func runJob(j job.Job, workDir string) error {
-	spin := createJobSpinner(j)
+func runJob(j job.Job, pos, size int, workDir string) error {
+	spin := createJobSpinner(j, pos, size)
 	spin.Start()
 
-	if err := runSteps(spin, j, workDir); err != nil {
-		return err
+	for i, st := range j.Steps {
+		spin.Update(fmt.Sprintf("Job %s (%d/%d): Running %s (%d/%d)", j.Name, pos, size, st.Name, i+1, len(j.Steps)))
+		err := runStep(st, workDir)
+		if err != nil {
+			spin.Error(fmt.Sprintf("Job %s (%d/%d): Failed on step '%s'", j.Name, pos, size, st.Name))
+			return stepFailed(st, err)
+		}
 	}
-	spin.Success()
+	spin.Success(fmt.Sprintf("Job %s (%d/%d): Completed", j.Name, pos, size))
 	return nil
 }
 
 // createJobSpinner creates a spinner for the given job.
-func createJobSpinner(j job.Job) *spinner.Spinner {
-	return spinner.New(spinner.Options{
-		Pending: fmt.Sprintf("Job %s: 0/%d", j.Name, len(j.Steps)),
-		Success: fmt.Sprintf("Job %s: Completed", j.Name),
-		Error:   fmt.Sprintf("Job: %s: Failed to complete", j.Name),
-	})
-}
-
-// runSteps runs the steps in workDir. The spin is updated after each step.
-func runSteps(spin *spinner.Spinner, j job.Job, workDir string) error {
-	for i, st := range j.Steps {
-		spin.Update(fmt.Sprintf("Job %s: %d/%d: %s", j.Name, i+1, len(j.Steps), st.Name))
-
-		err := runStep(st, workDir)
-		if err != nil {
-			spin.Error()
-			return stepFailed(st, err)
-		}
-	}
-	return nil
+func createJobSpinner(j job.Job, pos, size int) *spinner.Spinner {
+	text := fmt.Sprintf(fmt.Sprintf("Job %s (%d/%d): Pending...", j.Name, pos, size))
+	return spinner.New(text, spinner.Options{})
 }
 
 // runStep runs st.

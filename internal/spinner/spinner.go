@@ -18,15 +18,15 @@ type Spinner struct {
 }
 
 // New returns a new Spinner.
-func New(opts Options) *Spinner {
-	return &Spinner{opts: opts, spin: createSpinner(opts)}
+func New(text string, opts Options) *Spinner {
+	return &Spinner{opts: opts, spin: createSpinner(text, opts)}
 }
 
 // createSpinner constructs a new spinner from opts.
-func createSpinner(opts Options) *spinner.Spinner {
+func createSpinner(text string, opts Options) *spinner.Spinner {
 	spin := spinner.New(spinner.CharSets[11], 100*time.Millisecond)
 	spin.Prefix = strings.Repeat(" ", int(opts.Indent))
-	spin.Suffix = " " + opts.Pending
+	spin.Suffix = " " + text
 	_ = spin.Color("blue")
 	return spin
 }
@@ -38,16 +38,16 @@ func (s *Spinner) Start() {
 
 // Error stops the spinner with the error message that is specified in the
 // Options.
-func (s *Spinner) Error() {
-	s.spin.FinalMSG = fmt.Sprintf(" %s %s", color.RedString("×"), s.opts.Error)
+func (s *Spinner) Error(text string) {
+	s.spin.FinalMSG = fmt.Sprintf(" %s %s", color.RedString("×"), text)
 	s.spin.Stop()
 	println()
 }
 
 // Success stops the spinner with the success message that is specified in the
 // Options.
-func (s *Spinner) Success() {
-	s.spin.FinalMSG = fmt.Sprintf(" %s %s", color.GreenString("✓"), s.opts.Success)
+func (s *Spinner) Success(text string) {
+	s.spin.FinalMSG = fmt.Sprintf(" %s %s", color.GreenString("✓"), text)
 	s.spin.Stop()
 	println()
 }
