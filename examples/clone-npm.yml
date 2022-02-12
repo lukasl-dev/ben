@@ -1,0 +1,14 @@
+# Goal: Clone a node project and subsequently run `npm install`.
+
+name: Clone and NPM Install
+description: A sheet that simplifies the cloning procedure of a Node project.
+
+jobs:
+  setup:
+   name: Setup
+   description: Clones a repository into the working directory and runs `npm install` afterwards.
+   steps:
+    - name: Clone
+      command: git clone https://github.com/owner/repository .
+    - name: NPM Install
+      command: npm install
