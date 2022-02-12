@@ -41,6 +41,7 @@ func (s *Spinner) Start() {
 func (s *Spinner) Error() {
 	s.spin.FinalMSG = fmt.Sprintf(" %s %s", color.RedString("×"), s.opts.Error)
 	s.spin.Stop()
+	println()
 }
 
 // Success stops the spinner with the success message that is specified in the
@@ -48,6 +49,7 @@ func (s *Spinner) Error() {
 func (s *Spinner) Success() {
 	s.spin.FinalMSG = fmt.Sprintf(" %s %s", color.GreenString("✓"), s.opts.Success)
 	s.spin.Stop()
+	println()
 }
 
 // Update replaces the spinner's message with the specified one.
