@@ -5,6 +5,7 @@ import (
 	"github.com/lukasl-dev/ben/sheet/step"
 	"os/exec"
 	"strings"
+	"unicode"
 )
 
 // CommandOptions holds optional parameter for Command().
@@ -19,7 +20,7 @@ func Command(base step.Base, cmd step.Command, opts CommandOptions) error {
 		return fmt.Errorf("step: %s: command must not be empty", base.Name)
 	}
 
-	split := strings.Fields(cmd.Command)
+	split := args(cmd.Command)
 	if len(split) == 0 {
 		return fmt.Errorf("step: %s: command must not be empty", base.Name)
 	}
@@ -40,4 +41,15 @@ func Command(base step.Base, cmd step.Command, opts CommandOptions) error {
 	}
 
 	return nil
+}
+
+// args splits s into command arguments.
+func args(s string) []string {
+	quoted := false
+	return strings.FieldsFunc(s, func(r rune) bool {
+		if r == '"' || r == '\'' || r == '`' {
+			quoted = !quoted
+		}
+		return unicode.IsSpace(r) && !quoted
+	})
 }
