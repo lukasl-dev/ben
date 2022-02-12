@@ -13,6 +13,8 @@ func Step(sheet sheet.Sheet, step step.Step) error {
 		return Command(sheet, step.Base, *step.Command)
 	case step.Copy != nil:
 		return Copy(step.Base, *step.Copy)
+	case step.Mkdir != nil:
+		return Mkdir(step.Base, *step.Mkdir)
 	case step.Remove != nil:
 		return Remove(step.Base, *step.Remove)
 	case step.Rename != nil:
