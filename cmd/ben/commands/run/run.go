@@ -21,9 +21,6 @@ type run struct {
 
 	// skipConfirm indicates that the confirmation prompt should be skipped.
 	skipConfirm bool
-
-	// workDir is the working directory to use.
-	workDir string
 }
 
 // Command constructs the 'run' command.
@@ -42,7 +39,6 @@ func Command() *cobra.Command {
 // flags binds the flags to r.
 func (r *run) flags(set *pflag.FlagSet) {
 	set.StringVarP(&r.sheetURI, "sheet", "s", "ben.yml", "Path or URL to the sheet configuration file.")
-	set.StringVarP(&r.workDir, "working-directory", "w", "", "Working directory to run the sheet in. By default, the current directory is used.")
 }
 
 // pre prepares r for running.
@@ -70,7 +66,7 @@ func (r *run) run(*cobra.Command, []string) error {
 		}
 	}
 
-	if err := runJobs(s.Jobs, r.workDir); err != nil {
+	if err := runJobs(s.Jobs); err != nil {
 		return err
 	}
 	return nil
@@ -136,9 +132,9 @@ func confirmationFailed(err error) *handler.Error {
 }
 
 // runJobs runs the jobs in workDir.
-func runJobs(jobs []job.Job, workDir string) error {
+func runJobs(jobs []job.Job) error {
 	for i, j := range jobs {
-		if err := runJob(j, i+1, len(jobs), workDir); err != nil {
+		if err := runJob(j, i+1, len(jobs)); err != nil {
 			return err
 		}
 	}
@@ -146,13 +142,13 @@ func runJobs(jobs []job.Job, workDir string) error {
 }
 
 // runJob runs j in workDir.
-func runJob(j job.Job, pos, size int, workDir string) error {
+func runJob(j job.Job, pos, size int) error {
 	spin := createJobSpinner(j, pos, size)
 	spin.Start()
 
 	for i, st := range j.Steps {
 		spin.Update(fmt.Sprintf("Job %s (%d/%d): Running %s (%d/%d)", j.Name, pos, size, st.Name, i+1, len(j.Steps)))
-		err := runStep(st, workDir)
+		err := runStep(st)
 		if err != nil {
 			spin.Error(fmt.Sprintf("Job %s (%d/%d): Failed on step '%s'", j.Name, pos, size, st.Name))
 			return stepFailed(st, err)
@@ -169,12 +165,8 @@ func createJobSpinner(j job.Job, pos, size int) *spinner.Spinner {
 }
 
 // runStep runs st.
-func runStep(st step.Step, workDir string) error {
-	return steprunner.Step(st, steprunner.StepOptions{
-		Command: steprunner.CommandOptions{
-			WorkDir: workDir,
-		},
-	})
+func runStep(st step.Step) error {
+	return steprunner.Step(st)
 }
 
 // stepFailed wraps err in a handler.Error.

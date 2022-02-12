@@ -8,14 +8,8 @@ import (
 	"unicode"
 )
 
-// CommandOptions holds optional parameter for Command().
-type CommandOptions struct {
-	// WorkDir is the working directory for the command.
-	WorkDir string `json:"workDir,omitempty"`
-}
-
 // Command runs a command step.
-func Command(base step.Base, cmd step.Command, opts CommandOptions) error {
+func Command(base step.Base, cmd step.Command) error {
 	if cmd.Command == "" {
 		return fmt.Errorf("step: %s: command must not be empty", base.Name)
 	}
@@ -33,7 +27,7 @@ func Command(base step.Base, cmd step.Command, opts CommandOptions) error {
 	c := &exec.Cmd{
 		Path: path,
 		Args: split,
-		Dir:  opts.WorkDir,
+		Dir:  cmd.WorkDir,
 	}
 
 	if err := c.Run(); err != nil {
