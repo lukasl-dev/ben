@@ -10,14 +10,15 @@ type Step struct {
 	Base
 	*Command
 	*Copy
+	*Rename
 }
 
 // Validate validates s.
 func (s Step) Validate() error {
-	if s.Command != nil && s.Copy != nil {
+	if s.Command != nil && s.Copy != nil && s.Rename != nil {
 		return errors.New("step: a step cannot inherit multiple tasks")
 	}
-	if s.Command == nil && s.Copy == nil {
+	if s.Command == nil && s.Copy == nil && s.Rename == nil {
 		return errors.New("step: a step must inherit one task")
 	}
 	return nil
