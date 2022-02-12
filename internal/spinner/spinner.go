@@ -49,3 +49,8 @@ func (s *Spinner) Success() {
 	s.spin.FinalMSG = fmt.Sprintf(" %s %s", color.GreenString("✓"), s.opts.Success)
 	s.spin.Stop()
 }
+
+// Update replaces the spinner's message with the specified one.
+func (s *Spinner) Update(text string) {
+	s.spin.Suffix = " " + text
+}
