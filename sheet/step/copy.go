@@ -1,9 +1,7 @@
 package step
 
-// Copy represents a step that copies a file or directory into an other location.
+// Copy represents a step that copies a file or directory into another location.
 type Copy struct {
-	Base
-
 	// From the path to the file or directory to copy. It can be a URL for remote
 	// files.
 	From string `json:"from,omitempty"`
