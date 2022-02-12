@@ -26,21 +26,10 @@ type Sheet struct {
 // Load loads a sheet from a file or from a URL.
 func Load(pathOrURL string) (*Sheet, error) {
 	u, err := url.ParseRequestURI(pathOrURL)
-	if err == nil || u.Scheme == "http" || u.Scheme == "https" {
-		return read(pathOrURL)
+	if err == nil && (u.Scheme == "http" || u.Scheme == "https") {
+		return fetch(pathOrURL)
 	}
-	return fetch(pathOrURL)
-}
-
-// read unmarshals a sheet from a file that is located at the given local path.
-func read(path string) (*Sheet, error) {
-	content, err := os.ReadFile(path)
-	if err != nil {
-		return nil, err
-	}
-
-	var sheet *Sheet
-	return sheet, yaml.Unmarshal(content, &sheet)
+	return read(pathOrURL)
 }
 
 // fetch unmarshals a sheet from the response body of the HTTP request that is
@@ -58,4 +47,15 @@ func fetch(url string) (*Sheet, error) {
 
 	var sheet *Sheet
 	return sheet, yaml.Unmarshal(body, &sheet)
+}
+
+// read unmarshals a sheet from a file that is located at the given local path.
+func read(path string) (*Sheet, error) {
+	content, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+
+	var sheet *Sheet
+	return sheet, yaml.Unmarshal(content, &sheet)
 }
