@@ -22,7 +22,8 @@ func (s Step) Validate() error {
 
 	typ, val := reflect.TypeOf(s), reflect.ValueOf(s)
 	for i := 0; i < typ.NumField(); i++ {
-		if typ.Field(i).Anonymous && !val.Field(i).IsZero() {
+		tf, vf := typ.Field(i), val.Field(i)
+		if tf.Name != "Base" && tf.Anonymous && !vf.IsZero() {
 			set++
 		}
 	}
