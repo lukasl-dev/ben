@@ -18,6 +18,8 @@ func Step(step step.Step, options StepOptions) error {
 		return Command(step.Base, *step.Command, options.Command)
 	case step.Copy != nil:
 		return Copy(step.Base, *step.Copy)
+	case step.Remove != nil:
+		return Remove(step.Base, *step.Remove)
 	case step.Rename != nil:
 		return Rename(step.Base, *step.Rename)
 	default:
