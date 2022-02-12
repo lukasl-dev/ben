@@ -39,7 +39,7 @@ func (s *Spinner) Start() {
 // Error stops the spinner with the error message that is specified in the
 // Options.
 func (s *Spinner) Error() {
-	s.spin.FinalMSG = fmt.Sprintf(" %s %s", color.GreenString("×"), s.opts.Error)
+	s.spin.FinalMSG = fmt.Sprintf(" %s %s", color.RedString("×"), s.opts.Error)
 	s.spin.Stop()
 }
 
