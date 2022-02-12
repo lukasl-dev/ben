@@ -17,3 +17,28 @@ go install github.com/lukasl-dev/ben@latest
 ```shell
 go get -u github.com/lukasl-dev/ben
 ```
+
+## 🧩 Explanation
+
+### Sheet
+
+A sheet represents the configuration of one or more [jobs](#job). Its
+responsibility is to provide a configuration so Ben can set up an
+environment or even a complete project.
+
+### Job
+
+A job represents a list of tasks (=[steps](#step)) that must be completed to
+achieve a desired goal. See [Examples](#examples) for a more detailed insight.
+
+### Step
+
+A Step represents a subtask of a [Job](#job). It can perform different types of
+tasks. A Step can currently perform the following types of tasks:
+
+- Executing commands
+- Copying files and directories
+
+## 🧅 Examples
+
+- [Cloning a repository and run `npm install` afterwards.](examples/clone-npm.yml)
