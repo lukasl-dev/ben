@@ -21,6 +21,9 @@ type Sheet struct {
 	// Jobs is a slice of jobs that can be executed on the sheet. The key is the
 	// unique name of a job.
 	Jobs []job.Job `json:"jobs,omitempty"`
+
+	// WorkDir is the global working directory of a sheet.
+	WorkDir string `json:"workDir,omitempty"`
 }
 
 // Validate validates s.

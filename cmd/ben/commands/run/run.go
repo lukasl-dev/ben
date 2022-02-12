@@ -66,7 +66,7 @@ func (r *run) run(*cobra.Command, []string) error {
 		}
 	}
 
-	if err := runJobs(s.Jobs); err != nil {
+	if err := runJobs(*s); err != nil {
 		return err
 	}
 	return nil
@@ -132,9 +132,9 @@ func confirmationFailed(err error) *handler.Error {
 }
 
 // runJobs runs the jobs in workDir.
-func runJobs(jobs []job.Job) error {
-	for i, j := range jobs {
-		if err := runJob(j, i+1, len(jobs)); err != nil {
+func runJobs(s sheet.Sheet) error {
+	for i, j := range s.Jobs {
+		if err := runJob(s, j, i+1, len(s.Jobs)); err != nil {
 			return err
 		}
 	}
@@ -142,13 +142,13 @@ func runJobs(jobs []job.Job) error {
 }
 
 // runJob runs j in workDir.
-func runJob(j job.Job, pos, size int) error {
+func runJob(s sheet.Sheet, j job.Job, pos, size int) error {
 	spin := createJobSpinner(j, pos, size)
 	spin.Start()
 
 	for i, st := range j.Steps {
 		spin.Update(fmt.Sprintf("Job %s (%d/%d): Running %s (%d/%d)", j.Name, pos, size, st.Name, i+1, len(j.Steps)))
-		err := runStep(st)
+		err := runStep(s, st)
 		if err != nil {
 			spin.Error(fmt.Sprintf("Job %s (%d/%d): Failed on step '%s'", j.Name, pos, size, st.Name))
 			return stepFailed(st, err)
@@ -165,8 +165,8 @@ func createJobSpinner(j job.Job, pos, size int) *spinner.Spinner {
 }
 
 // runStep runs st.
-func runStep(st step.Step) error {
-	return steprunner.Step(st)
+func runStep(s sheet.Sheet, st step.Step) error {
+	return steprunner.Step(s, st)
 }
 
 // stepFailed wraps err in a handler.Error.

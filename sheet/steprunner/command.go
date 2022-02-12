@@ -2,6 +2,7 @@ package steprunner
 
 import (
 	"fmt"
+	"github.com/lukasl-dev/ben/sheet"
 	"github.com/lukasl-dev/ben/sheet/step"
 	"os/exec"
 	"strings"
@@ -9,7 +10,7 @@ import (
 )
 
 // Command runs a command step.
-func Command(base step.Base, cmd step.Command) error {
+func Command(sheet sheet.Sheet, base step.Base, cmd step.Command) error {
 	if cmd.Command == "" {
 		return fmt.Errorf("step: %s: command must not be empty", base.Name)
 	}
@@ -24,10 +25,15 @@ func Command(base step.Base, cmd step.Command) error {
 		return fmt.Errorf("step: %s: executable not found", base.Name)
 	}
 
+	workDir := sheet.WorkDir
+	if cmd.WorkDir != "" {
+		workDir = cmd.WorkDir
+	}
+
 	c := &exec.Cmd{
 		Path: path,
 		Args: split,
-		Dir:  cmd.WorkDir,
+		Dir:  workDir,
 	}
 
 	if err := c.Run(); err != nil {
