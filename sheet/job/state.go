@@ -4,7 +4,7 @@ package job
 type State string
 
 const (
-	// Required indicates that a job is required to be run.
+	// Required indicates that a job is required to run a sheet.
 	Required State = "required"
 
 	// Enabled indicates that a job enabled by default.
