@@ -19,7 +19,7 @@ func Command(base step.Base, cmd step.Command, opts CommandOptions) error {
 		return fmt.Errorf("step: %s: command must not be empty", base.Name)
 	}
 
-	split := strings.Split(cmd.Command, " ")
+	split := strings.Fields(cmd.Command)
 	if len(split) == 0 {
 		return fmt.Errorf("step: %s: command must not be empty", base.Name)
 	}
