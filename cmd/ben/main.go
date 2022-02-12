@@ -9,7 +9,7 @@ import (
 func main() {
 	cmd := cobra.Command{
 		Use:   "ben",
-		Short: "Ben is a tool for managing boilerplate code.",
+		Short: "A command-line tool for managing sequential command procedures.",
 	}
 	cmd.AddCommand(run.Command())
 	if err := cmd.Execute(); err != nil {
