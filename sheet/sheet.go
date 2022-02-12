@@ -23,6 +23,18 @@ type Sheet struct {
 	Jobs map[string]job.Job `json:"jobs,omitempty"`
 }
 
+// Validate validates s.
+func (s Sheet) Validate() error {
+	for _, j := range s.Jobs {
+		for _, step := range j.Steps {
+			if err := step.Validate(); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
 // Load loads a sheet from a file or from a URL.
 func Load(pathOrURL string) (*Sheet, error) {
 	u, err := url.ParseRequestURI(pathOrURL)
