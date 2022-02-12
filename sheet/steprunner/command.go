@@ -35,7 +35,7 @@ func Command(base step.Base, cmd step.Command, opts CommandOptions) error {
 		Dir:  opts.WorkDir,
 	}
 
-	if err := c.Start(); err != nil {
+	if err := c.Run(); err != nil {
 		return fmt.Errorf("step: %s: %w", base.Name, err)
 	}
 
