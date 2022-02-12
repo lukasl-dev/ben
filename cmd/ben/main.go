@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/lukasl-dev/ben/cmd/commands/run"
+	"github.com/lukasl-dev/ben/cmd/ben/commands/run"
 	"github.com/spf13/cobra"
 	"log"
 )

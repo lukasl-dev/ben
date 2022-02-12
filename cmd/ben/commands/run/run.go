@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/AlecAivazis/survey/v2"
-	"github.com/lukasl-dev/ben/cmd/handler"
+	"github.com/lukasl-dev/ben/cmd/ben/handler"
 	"github.com/lukasl-dev/ben/internal/spinner"
 	"github.com/lukasl-dev/ben/sheet"
 	"github.com/lukasl-dev/ben/sheet/job"
