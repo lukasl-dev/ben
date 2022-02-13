@@ -1,60 +1,82 @@
 package steprunner
 
 import (
-	"fmt"
+	"errors"
 	"os/exec"
 	"strings"
 	"unicode"
 
+	"github.com/lukasl-dev/ben/internal"
 	"github.com/lukasl-dev/ben/sheet"
 	"github.com/lukasl-dev/ben/sheet/step"
 )
 
 // Command runs a command step.
-func Command(sheet sheet.Sheet, base step.Base, cmd step.Command) error {
-	if cmd.Command.Run == "" {
-		return fmt.Errorf("step: %s: command must not be empty", base.Name)
-	}
-
-	split := args(cmd.Command.Run)
-	if len(split) == 0 {
-		return fmt.Errorf("step: %s: command must not be empty", base.Name)
-	}
-
-	path, err := exec.LookPath(split[0])
+func Command(sh sheet.Sheet, st step.Step) error {
+	cmd, err := cmd(sh, st)
 	if err != nil {
-		return fmt.Errorf("step: %s: executable not found", base.Name)
+		return err
 	}
-
-	workDir := sheet.WorkDir
-	if cmd.Command.WorkDir != "" {
-		workDir = cmd.Command.WorkDir
-	}
-
-	c := &exec.Cmd{
-		Path: path,
-		Args: split,
-		Dir:  workDir,
-	}
-
-	err = c.Run()
-	if err != nil {
-		exit, ok := err.(*exec.ExitError)
-
-		// ignore failed exit if it is considered as successful in the
-		// given step's configuration
-		if ok && isInExitCodes(exit.ExitCode(), cmd.Command.ExitCodes) {
-			return nil
-		}
-
-		return fmt.Errorf("step: %s: %w", base.Name, err)
-	}
-
-	return nil
+	return runCmd(st, cmd)
 }
 
-// args splits s into command arguments.
-func args(s string) []string {
+// cmd creates a executable command from st.
+func cmd(sh sheet.Sheet, st step.Step) (*exec.Cmd, error) {
+	workDir := sh.WorkDir
+	if st.Command.WorkDir != "" {
+		workDir = st.Command.WorkDir
+	}
+
+	path, args, err := lookUpCmdPath(st)
+	if err != nil {
+		return nil, err
+	}
+
+	return &exec.Cmd{Path: path, Args: args, Dir: workDir}, nil
+}
+
+// lookupCmdPath looks up the command path and arguments from st.
+func lookUpCmdPath(st step.Step) (string, []string, error) {
+	if st.Command.Run == "" {
+		return "", nil, &internal.Error{
+			Prefix: "step",
+			Origin: st.Name,
+			Err:    errors.New("a command must have a run value"),
+			Suggestions: []string{
+				"Define a run value in the command step's configuration",
+			},
+		}
+	}
+
+	args := cmdArgs(st.Command.Run)
+	if len(args) == 0 {
+		return "", nil, &internal.Error{
+			Prefix: "step",
+			Origin: st.Name,
+			Err:    errors.New("a command must have a run value"),
+			Suggestions: []string{
+				"Define a run value in the command step's configuration",
+			},
+		}
+	}
+
+	path, err := exec.LookPath(args[0])
+	if err != nil {
+		return "", nil, &internal.Error{
+			Prefix: "step",
+			Origin: st.Name,
+			Err:    err,
+			Suggestions: []string{
+				"Check if the command is available on your system",
+			},
+		}
+	}
+
+	return path, args, nil
+}
+
+// cmdArgs splits s into command arguments.
+func cmdArgs(s string) []string {
 	quoted := false
 	return strings.FieldsFunc(s, func(r rune) bool {
 		if r == '"' || r == '\'' || r == '`' {
@@ -62,6 +84,30 @@ func args(s string) []string {
 		}
 		return unicode.IsSpace(r) && !quoted
 	})
+}
+
+// runCmd runs cmd and returns an error if the exit code is not considered
+// successfull.
+func runCmd(st step.Step, cmd *exec.Cmd) error {
+	err := cmd.Run()
+	if err == nil {
+		return nil
+	}
+
+	exit, ok := err.(*exec.ExitError)
+	if ok && isInExitCodes(exit.ExitCode(), st.Command.ExitCodes) {
+		return nil
+	}
+
+	return &internal.Error{
+		Prefix: "step",
+		Origin: st.Name,
+		Err:    err,
+		Suggestions: []string{
+			"Check if the arguments given to the command are correct",
+			"Check if the exit code is 0. If not, you can specify the exit codes in the command step's configuration",
+		},
+	}
 }
 
 // isInExitCodes returns true if exitCode is found in exitCodes.
