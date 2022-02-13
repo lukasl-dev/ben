@@ -3,6 +3,7 @@ package run
 import (
 	"errors"
 	"fmt"
+
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/lukasl-dev/ben/cmd/ben/handler"
 	"github.com/lukasl-dev/ben/internal/spinner"
@@ -147,20 +148,20 @@ func runJob(s sheet.Sheet, j job.Job, pos, size int) error {
 	spin.Start()
 
 	for i, st := range j.Steps {
-		spin.Update(fmt.Sprintf("Job %s (%d/%d): Running %s (%d/%d)", j.Name, pos, size, st.Name, i+1, len(j.Steps)))
+		spin.Update(fmt.Sprintf("%s (%d/%d): %s (%d/%d)", j.Name, pos, size, st.Name, i+1, len(j.Steps)))
 		err := runStep(s, st)
 		if err != nil {
-			spin.Error(fmt.Sprintf("Job %s (%d/%d): Failed on step '%s'", j.Name, pos, size, st.Name))
+			spin.Error(fmt.Sprintf("%s (%d/%d): Failed on step '%s'", j.Name, pos, size, st.Name))
 			return stepFailed(st, err)
 		}
 	}
-	spin.Success(fmt.Sprintf("Job %s (%d/%d): Completed", j.Name, pos, size))
+	spin.Success(fmt.Sprintf("%s (%d/%d): Completed", j.Name, pos, size))
 	return nil
 }
 
 // createJobSpinner creates a spinner for the given job.
 func createJobSpinner(j job.Job, pos, size int) *spinner.Spinner {
-	text := fmt.Sprintf(fmt.Sprintf("Job %s (%d/%d): Pending...", j.Name, pos, size))
+	text := fmt.Sprintf("%s (%d/%d): Pending...", j.Name, pos, size)
 	return spinner.New(text, spinner.Options{})
 }
 
