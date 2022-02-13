@@ -1,25 +1,35 @@
 package steprunner
 
 import (
-	"fmt"
-	"github.com/lukasl-dev/ben/sheet/step"
 	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/lukasl-dev/ben/internal"
+	"github.com/lukasl-dev/ben/sheet/step"
 )
 
 // Clean runs a clear step.
-func Clean(base step.Base, clear step.Clean) error {
+func Clean(st step.Step) error {
 	excluded := make(map[string]bool)
-	for _, exclude := range clear.Clean.Exclude {
+	for _, exclude := range st.Clean.Exclude {
 		exclude, _ = filepath.Abs(exclude)
 		excluded[exclude] = true
 	}
 
-	if err := walkDirExcludeRoot(clear.Clean.Path, removeNotExcluded(excluded)); err != nil {
-		return fmt.Errorf("step: %s: %w", base.Name, err)
+	err := walkDirExcludeRoot(st.Clean.Path, removeNotExcluded(excluded))
+	if err != nil {
+		return &internal.Error{
+			Prefix: "step",
+			Origin: st.Name,
+			Err:    err,
+			Suggestions: []string{
+				"Check if the directory exists",
+			},
+		}
 	}
+
 	return nil
 }
 
