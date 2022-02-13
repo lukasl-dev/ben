@@ -2,20 +2,21 @@ package steprunner
 
 import (
 	"fmt"
-	"github.com/lukasl-dev/ben/sheet"
-	"github.com/lukasl-dev/ben/sheet/step"
 	"os/exec"
 	"strings"
 	"unicode"
+
+	"github.com/lukasl-dev/ben/sheet"
+	"github.com/lukasl-dev/ben/sheet/step"
 )
 
 // Command runs a command step.
 func Command(sheet sheet.Sheet, base step.Base, cmd step.Command) error {
-	if cmd.Command == "" {
+	if cmd.Command.Run == "" {
 		return fmt.Errorf("step: %s: command must not be empty", base.Name)
 	}
 
-	split := args(cmd.Command)
+	split := args(cmd.Command.Run)
 	if len(split) == 0 {
 		return fmt.Errorf("step: %s: command must not be empty", base.Name)
 	}
@@ -26,8 +27,8 @@ func Command(sheet sheet.Sheet, base step.Base, cmd step.Command) error {
 	}
 
 	workDir := sheet.WorkDir
-	if cmd.WorkDir != "" {
-		workDir = cmd.WorkDir
+	if cmd.Command.WorkDir != "" {
+		workDir = cmd.Command.WorkDir
 	}
 
 	c := &exec.Cmd{
@@ -36,7 +37,16 @@ func Command(sheet sheet.Sheet, base step.Base, cmd step.Command) error {
 		Dir:  workDir,
 	}
 
-	if err := c.Run(); err != nil {
+	err = c.Run()
+	if err != nil {
+		exit, ok := err.(*exec.ExitError)
+
+		// ignore failed exit if it is considered as successful in the
+		// given step's configuration
+		if ok && isInExitCodes(exit.ExitCode(), cmd.Command.ExitCodes) {
+			return nil
+		}
+
 		return fmt.Errorf("step: %s: %w", base.Name, err)
 	}
 
@@ -52,4 +62,14 @@ func args(s string) []string {
 		}
 		return unicode.IsSpace(r) && !quoted
 	})
+}
+
+// isInExitCodes returns true if exitCode is found in exitCodes.
+func isInExitCodes(exitCode int, exitCodes []int) bool {
+	for _, ec := range exitCodes {
+		if exitCode == ec {
+			return true
+		}
+	}
+	return false
 }
