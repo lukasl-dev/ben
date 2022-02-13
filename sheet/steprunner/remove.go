@@ -7,8 +7,8 @@ import (
 	"github.com/lukasl-dev/ben/sheet/step"
 )
 
-// Remove runs a remove step.
-func Remove(st step.Step) error {
+// remove runs a remove step.
+func remove(st step.Step) error {
 	if err := os.Remove(*st.Remove); err != nil {
 		return &internal.Error{
 			Prefix: "step",

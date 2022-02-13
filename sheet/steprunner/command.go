@@ -11,8 +11,8 @@ import (
 	"github.com/lukasl-dev/ben/sheet/step"
 )
 
-// Command runs a command step.
-func Command(sh sheet.Sheet, st step.Step) error {
+// command runs a command step.
+func command(sh sheet.Sheet, st step.Step) error {
 	cmd, err := cmd(sh, st)
 	if err != nil {
 		return err

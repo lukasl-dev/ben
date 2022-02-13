@@ -14,17 +14,17 @@ import (
 func Step(sh sheet.Sheet, st step.Step) error {
 	switch {
 	case st.Clean != nil:
-		return Clean(st)
+		return clean(st)
 	case st.Command != nil:
-		return Command(sh, st)
+		return command(sh, st)
 	case st.Copy != nil:
-		return Copy(st)
+		return copy(st)
 	case st.Mkdir != nil:
-		return Mkdir(st)
+		return mkdir(st)
 	case st.Remove != nil:
-		return Remove(st)
+		return remove(st)
 	case st.Rename != nil:
-		return Rename(st)
+		return rename(st)
 	default:
 		return &internal.Error{
 			Prefix: "step",

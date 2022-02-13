@@ -6,8 +6,8 @@ import (
 	cp "github.com/otiai10/copy"
 )
 
-// Copy runs a copy step.
-func Copy(st step.Step) error {
+// copy runs a copy step.
+func copy(st step.Step) error {
 	err := cp.Copy(st.Copy.From, st.Copy.To)
 	if err != nil {
 		return &internal.Error{

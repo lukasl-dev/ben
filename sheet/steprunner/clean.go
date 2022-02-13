@@ -10,8 +10,8 @@ import (
 	"github.com/lukasl-dev/ben/sheet/step"
 )
 
-// Clean runs a clear step.
-func Clean(st step.Step) error {
+// clean runs a clear step.
+func clean(st step.Step) error {
 	excluded := make(map[string]bool)
 	for _, exclude := range st.Clean.Exclude {
 		exclude, _ = filepath.Abs(exclude)

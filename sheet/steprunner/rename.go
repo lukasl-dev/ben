@@ -7,8 +7,8 @@ import (
 	"github.com/lukasl-dev/ben/sheet/step"
 )
 
-// Rename runs a rename step.
-func Rename(st step.Step) error {
+// rename runs a rename step.
+func rename(st step.Step) error {
 	if err := os.Rename(st.Rename.Old, st.Rename.New); err != nil {
 		return &internal.Error{
 			Prefix: "step",
