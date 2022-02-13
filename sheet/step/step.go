@@ -9,6 +9,7 @@ import (
 // embedded fields can be set.
 type Step struct {
 	Base
+	*Clean
 	*Command
 	*Copy
 	*Mkdir
@@ -29,7 +30,7 @@ func (s Step) Validate() error {
 	}
 
 	if set != 1 {
-		return fmt.Errorf("step: %s: exactly one of the fields must be set: command, copy, mkdir, remove, rename", s.Name)
+		return fmt.Errorf("step: %s: exactly one of the fields must be set: clean, command, copy, mkdir, remove, rename", s.Name)
 	}
 
 	return nil
