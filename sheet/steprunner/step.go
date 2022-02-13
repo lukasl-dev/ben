@@ -9,6 +9,8 @@ import (
 // Step runs a step according to its type.
 func Step(sheet sheet.Sheet, step step.Step) error {
 	switch {
+	case step.Clean != nil:
+		return Clean(step.Base, *step.Clean)
 	case step.Command != nil:
 		return Command(sheet, step.Base, *step.Command)
 	case step.Copy != nil:
