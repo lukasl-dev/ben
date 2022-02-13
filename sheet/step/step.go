@@ -1,5 +1,7 @@
 package step
 
+import "reflect"
+
 // Step represents a general step in a configuration file. Only one of the
 // embedded fields can be set.
 type Step struct {
@@ -36,4 +38,15 @@ type Step struct {
 func (s Step) Validate() error {
 	// TODO
 	return nil
+}
+
+// StepFields returns the json names of all step configuration fields.
+func StepFields() []string {
+	typ := reflect.TypeOf(Step{})
+	names := make([]string, typ.NumField()+1)
+
+	for i := 1; i < typ.NumField(); i++ {
+		names[i] = typ.Field(i).Tag.Get("json")
+	}
+	return names
 }
