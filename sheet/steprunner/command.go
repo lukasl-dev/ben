@@ -87,7 +87,7 @@ func cmdArgs(s string) []string {
 }
 
 // runCmd runs cmd and returns an error if the exit code is not considered
-// successfull.
+// as successfully.
 func runCmd(st step.Step, cmd *exec.Cmd) error {
 	err := cmd.Run()
 	if err == nil {
