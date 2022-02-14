@@ -20,7 +20,7 @@ func command(sh sheet.Sheet, st step.Step) error {
 	return runCmd(st, cmd)
 }
 
-// cmd creates a executable command from st.
+// cmd creates an executable command from st.
 func cmd(sh sheet.Sheet, st step.Step) (*exec.Cmd, error) {
 	workDir := sh.WorkDir
 	if st.Command.WorkDir != "" {
