@@ -17,17 +17,17 @@ type Step struct {
 	// Command step.
 	Command *Command `json:"command,omitempty" hcl:"command,block"`
 
-	// Copy is the data for copying a file or directory into another localtion.
+	// Copy is the data for copying a file or directory into another location.
 	// If it is set, the step is a Copy step.
 	Copy *Copy `json:"copy,omitempty" hcl:"copy,block"`
 
 	// Mkdir is the path to the directory to create. If it is set, the step is a
 	// Mkdir step.
-	Mkdir *string `json:"mkdir,omitempty" hcl:"mkdir"`
+	Mkdir *string `json:"mkdir,omitempty" hcl:"mkdir,optional"`
 
 	// Remove is th path to the file or directory to remove. If it is set, the
 	// step is a Remove step.
-	Remove *string `json:"remove,omitempty" hcl:"remove"`
+	Remove *string `json:"remove,omitempty" hcl:"remove,optional"`
 
 	// Rename is the data for renaming a file or directory. If it is set, the
 	// step is a Rename step.
