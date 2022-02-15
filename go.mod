@@ -5,6 +5,7 @@ go 1.17
 require (
 	github.com/AlecAivazis/survey/v2 v2.3.2
 	github.com/briandowns/spinner v1.18.1
+	github.com/charmbracelet/bubbles v0.10.2
 	github.com/charmbracelet/bubbletea v0.20.0
 	github.com/fatih/color v1.13.0
 	github.com/hashicorp/hcl/v2 v2.11.1
@@ -19,6 +20,8 @@ require (
 require (
 	github.com/agext/levenshtein v1.2.3 // indirect
 	github.com/apparentlymart/go-textseg/v13 v13.0.0 // indirect
+	github.com/atotto/clipboard v0.1.4 // indirect
+	github.com/charmbracelet/lipgloss v0.4.0 // indirect
 	github.com/containerd/console v1.0.3 // indirect
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
 	github.com/google/go-cmp v0.5.6 // indirect
