@@ -3,6 +3,7 @@ package run
 import (
 	"errors"
 	"fmt"
+	"github.com/lukasl-dev/ben/loader"
 
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/lukasl-dev/ben/cmd/ben/handler"
@@ -79,7 +80,7 @@ func loadSheet(uri string) (*sheet.Sheet, error) {
 	s := spinner.New("Loading sheet...", spinner.Options{})
 	s.Start()
 
-	loaded, err := sheet.Load(uri)
+	loaded, err := loader.Load(uri, loader.NoOptions)
 	if err != nil {
 		s.Error(fmt.Sprintf("Failed to load sheet: %s", err))
 	}
