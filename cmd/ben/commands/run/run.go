@@ -171,16 +171,13 @@ func createJobSpinner(j job.Job, pos, size int) *spinner.Spinner {
 func runStep(j job.Job, stp step.Step) error {
 	logs, _ := os.OpenFile("ben.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	logrus.SetOutput(logs)
-	return runner.Run(stp, runner.Options{
-		Stdout: logrus.StandardLogger().WithFields(logrus.Fields{
-			"job":  j.Name,
-			"step": stp.Name,
-		}).Writer(),
-		Stderr: logrus.StandardLogger().WithFields(logrus.Fields{
-			"job":  j.Name,
-			"step": stp.Name,
-		}).Writer(),
-	})
+
+	w := logrus.StandardLogger().WithFields(logrus.Fields{
+		"job":  j.Name,
+		"step": stp.Name,
+	}).Writer()
+
+	return runner.Run(stp, runner.Options{Stdout: w, Stderr: w})
 }
 
 // stepFailed wraps err in a handler.Error.

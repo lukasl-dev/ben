@@ -8,17 +8,14 @@ import (
 // file.
 type Sheet struct {
 	// Name is the display name of the sheet.
-	Name string `json:"name,omitempty"`
+	Name string `json:"name,omitempty" hcl:"name"`
 
 	// Description is a short description about the usage of the sheet.
-	Description string `json:"description,omitempty"`
+	Description string `json:"description,omitempty" hcl:"description,optional"`
 
 	// Jobs is a slice of jobs that can be executed on the sheet. The key is the
 	// unique name of a job.
-	Jobs []job.Job `json:"jobs,omitempty"`
-
-	// WorkDir is the global working directory of a sheet.
-	WorkDir string `json:"workDir,omitempty"`
+	Jobs []job.Job `json:"jobs,omitempty" hcl:"job,block"`
 }
 
 // Validate validates s.
