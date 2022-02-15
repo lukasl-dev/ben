@@ -1,35 +1,24 @@
-package steprunner
+package runner
 
 import (
+	"fmt"
+	"github.com/lukasl-dev/ben/sheet/step"
 	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
-
-	"github.com/lukasl-dev/ben/internal"
-	"github.com/lukasl-dev/ben/sheet/step"
 )
 
-// clean runs a clear step.
-func clean(st step.Step) error {
+func clean(stp step.Step, _ Options) error {
 	excluded := make(map[string]bool)
-	for _, exclude := range st.Clean.Exclude {
+	for _, exclude := range stp.Clean.Exclude {
 		exclude, _ = filepath.Abs(exclude)
 		excluded[exclude] = true
 	}
 
-	err := walkDirExcludeRoot(st.Clean.Path, removeNotExcluded(excluded))
-	if err != nil {
-		return &internal.Error{
-			Prefix: "step",
-			Origin: st.Name,
-			Err:    err,
-			Suggestions: []string{
-				"Check if the directory exists",
-			},
-		}
+	if err := walkDirExcludeRoot(stp.Clean.Path, removeNotExcluded(excluded)); err != nil {
+		return fmt.Errorf("clean: %w", err)
 	}
-
 	return nil
 }
 
@@ -66,8 +55,8 @@ func removeNotExcluded(excluded map[string]bool) fs.WalkDirFunc {
 	}
 }
 
-// isSubpathOfExcluded reports whether the given path is a
-// subpath of an entry in the given excluded paths.
+// isSubpathOfExcluded reports whether the given path is a subpath of an entry
+// in the given excluded paths.
 func isSubpathOfExcluded(path string, excluded map[string]bool) bool {
 	for excludedPath := range excluded {
 		if strings.HasPrefix(excludedPath, path) {
