@@ -3,16 +3,18 @@ package run
 import (
 	"errors"
 	"fmt"
-
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/lukasl-dev/ben/cmd/ben/handler"
 	"github.com/lukasl-dev/ben/internal/spinner"
+	"github.com/lukasl-dev/ben/loader"
+	"github.com/lukasl-dev/ben/runner"
 	"github.com/lukasl-dev/ben/sheet"
 	"github.com/lukasl-dev/ben/sheet/job"
 	"github.com/lukasl-dev/ben/sheet/step"
-	"github.com/lukasl-dev/ben/sheet/steprunner"
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
+	"os"
 )
 
 // run contains flags that have been passed to the command.
@@ -79,7 +81,7 @@ func loadSheet(uri string) (*sheet.Sheet, error) {
 	s := spinner.New("Loading sheet...", spinner.Options{})
 	s.Start()
 
-	loaded, err := sheet.Load(uri)
+	loaded, err := loader.Load(uri, loader.NoOptions)
 	if err != nil {
 		s.Error(fmt.Sprintf("Failed to load sheet: %s", err))
 	}
@@ -147,12 +149,12 @@ func runJob(s sheet.Sheet, j job.Job, pos, size int) error {
 	spin := createJobSpinner(j, pos, size)
 	spin.Start()
 
-	for i, st := range j.Steps {
-		spin.Update(fmt.Sprintf("%s (%d/%d): %s (%d/%d)", j.Name, pos, size, st.Name, i+1, len(j.Steps)))
-		err := runStep(s, st)
+	for i, stp := range j.Steps {
+		spin.Update(fmt.Sprintf("%s (%d/%d): %s (%d/%d)", j.Name, pos, size, stp.Name, i+1, len(j.Steps)))
+		err := runStep(j, stp)
 		if err != nil {
-			spin.Error(fmt.Sprintf("%s (%d/%d): Failed on step '%s'", j.Name, pos, size, st.Name))
-			return stepFailed(st, err)
+			spin.Error(fmt.Sprintf("%s (%d/%d): Failed on step '%s'", j.Name, pos, size, stp.Name))
+			return stepFailed(stp, err)
 		}
 	}
 	spin.Success(fmt.Sprintf("%s (%d/%d): Completed", j.Name, pos, size))
@@ -166,8 +168,16 @@ func createJobSpinner(j job.Job, pos, size int) *spinner.Spinner {
 }
 
 // runStep runs st.
-func runStep(s sheet.Sheet, st step.Step) error {
-	return steprunner.Step(s, st)
+func runStep(j job.Job, stp step.Step) error {
+	logs, _ := os.OpenFile("ben.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	logrus.SetOutput(logs)
+
+	w := logrus.StandardLogger().WithFields(logrus.Fields{
+		"job":  j.Name,
+		"step": stp.Name,
+	}).Writer()
+
+	return runner.Run(stp, runner.Options{Stdout: w, Stderr: w})
 }
 
 // stepFailed wraps err in a handler.Error.

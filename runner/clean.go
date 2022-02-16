@@ -1,4 +1,4 @@
-package steprunner
+package runner
 
 import (
 	"fmt"
@@ -9,16 +9,15 @@ import (
 	"strings"
 )
 
-// Clean runs a clear step.
-func Clean(base step.Base, clear step.Clean) error {
+func clean(stp step.Step, _ Options) error {
 	excluded := make(map[string]bool)
-	for _, exclude := range clear.Clean.Exclude {
+	for _, exclude := range stp.Clean.Exclude {
 		exclude, _ = filepath.Abs(exclude)
 		excluded[exclude] = true
 	}
 
-	if err := walkDirExcludeRoot(clear.Clean.Path, removeNotExcluded(excluded)); err != nil {
-		return fmt.Errorf("step: %s: %w", base.Name, err)
+	if err := walkDirExcludeRoot(stp.Clean.Path, removeNotExcluded(excluded)); err != nil {
+		return fmt.Errorf("clean: %w", err)
 	}
 	return nil
 }
@@ -56,8 +55,8 @@ func removeNotExcluded(excluded map[string]bool) fs.WalkDirFunc {
 	}
 }
 
-// isSubpathOfExcluded reports whether the given path is a
-// subpath of an entry in the given excluded paths.
+// isSubpathOfExcluded reports whether the given path is a subpath of an entry
+// in the given excluded paths.
 func isSubpathOfExcluded(path string, excluded map[string]bool) bool {
 	for excludedPath := range excluded {
 		if strings.HasPrefix(excludedPath, path) {
