@@ -10,10 +10,10 @@ type Path struct {
 	Exists *bool `json:"exists,omitempty" hcl:"exists,optional"`
 
 	// Dir reports whether the path must be a directory or not. If it is nil,
-	// the path must be a directory.
+	// the path can be resolved to a directory.
 	Dir *bool `json:"dir,omitempty" hcl:"dir,optional"`
 
 	// File reports whether the path must be a file or not. If it is nil, the
-	// path must be a file.
+	// path can be resolved to a file.
 	File *bool `json:"file,omitempty" hcl:"file,optional"`
 }
