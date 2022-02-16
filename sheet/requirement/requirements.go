@@ -7,5 +7,5 @@ type Requirements struct {
 	Paths []Path `json:"paths,omitempty" hcl:"path,block"`
 
 	// Executable is a slice of executables that need to be installed.
-	Executables []Executable `json:"executables,omitempty"`
+	Executables []Executable `json:"executables,omitempty" hcl:"executable,block"`
 }
