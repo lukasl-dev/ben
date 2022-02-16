@@ -6,6 +6,7 @@ type Env struct {
 	Name string `json:"name,omitempty" hcl:"name,label"`
 
 	// Like is a regular expression that is matched against the value of the
-	// environment variable
+	// environment variable. If it is empty, the environment variable's value is
+	// arbitrary.
 	Like string `json:"like,omitempty"`
 }
