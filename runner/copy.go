@@ -7,7 +7,7 @@ import (
 	cp "github.com/otiai10/copy"
 )
 
-//goland:noinspection ALL
+//goland:noinspection SpellCheckingInspection
 func ccopy(stp step.Step, _ Options) error {
 	switch {
 	case stp.Copy.From == "":

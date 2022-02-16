@@ -2,6 +2,7 @@ package sheet
 
 import (
 	"github.com/lukasl-dev/ben/sheet/job"
+	"github.com/lukasl-dev/ben/sheet/requirement"
 )
 
 // Sheet is a collection of jobs. It represents the content of a configuration
@@ -9,6 +10,9 @@ import (
 type Sheet struct {
 	// Name is the display name of the sheet.
 	Name string `json:"name,omitempty" hcl:"name"`
+
+	// Requirements contains requirements that must be met to run this sheet.
+	Requirements *requirement.Requirements `json:"requirements,omitempty" hcl:"requirements,block"`
 
 	// Description is a short description about the usage of the sheet.
 	Description string `json:"description,omitempty" hcl:"description,optional"`
